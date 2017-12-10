@@ -17,6 +17,11 @@ app.use(cors({origin: '*'})); //USED FOR FCC TESTING PURPOSES ONLY!
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(function(req, res, next) {
+  res.setHeader('x-powered-by', 'PHP 4.2.0')
+  next();
+});
+
 //Index page (static HTML)
 app.route('/')
   .get(function (req, res) {
@@ -38,8 +43,8 @@ app.use(function(req, res, next) {
 
 //Start our server and tests!
 app.listen(process.env.PORT || 3000, function () {
-  console.log("Listening on port " + process.env.PORT);
-  if(process.env.NODE_ENV==='test') {
+  console.log("Listening on port " + (process.env.PORT || 3000));
+  if( process.env.NODE_ENV && process.env.NODE_ENV.trim()==='test') {
     console.log('Running Tests...');
     setTimeout(function () {
       try {

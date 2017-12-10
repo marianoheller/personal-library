@@ -14,21 +14,39 @@ var ObjectId = require('mongodb').ObjectId;
 const MONGODB_CONNECTION_STRING = process.env.DB;
 //Example connection: MongoClient.connect(MONGODB_CONNECTION_STRING, function(err, db) {});
 
+var Book = require('../models/book');
+
+
 module.exports = function (app) {
 
   app.route('/api/books')
     .get(function (req, res){
-      //response will be array of book objects
-      //json res format: [{"_id": bookid, "title": book_title, "commentcount": num_of_comments },...]
+      Book.find({}, (err, res) => {
+        res.send( res.map( (book) => {
+          return {
+            _id: book._id,
+            title: book.title,
+            commentCount: book.comments.length
+          }
+        }))
+      })
     })
     
     .post(function (req, res){
       var title = req.body.title;
-      //response will contain new book object including atleast _id and title
+      if (!title) return res.status(400).send('title needed');
+      const book = new Book({ title: title });
+      book.save( (err) => {
+        if(err) return res.status(400).send(err.message);
+        res.json(book);
+      })
     })
     
     .delete(function(req, res){
-      //if successful response will be 'complete delete successful'
+      Book.remove({}, (err) => {
+        if(err) return res.status(400).send(err.message);
+        res.send('complete delete successful');
+      })
     });
 
 
@@ -36,18 +54,34 @@ module.exports = function (app) {
   app.route('/api/books/:id')
     .get(function (req, res){
       var bookid = req.params.id;
-      //json res format: {"_id": bookid, "title": book_title, "comments": [comment,comment,...]}
+      if( !bookid ) return res.status(400).send('no book exists');
+      Book.find({_id: bookid}, (err, book) => {
+        if( err ) return res.status(400).send(err.message);
+        res.send(book);
+      })
     })
     
     .post(function(req, res){
       var bookid = req.params.id;
       var comment = req.body.comment;
-      //json res format same as .get
+      if( !bookid ) return res.status(400).send('no book exists');
+      Book.find({_id: bookid}, (err, book) => {
+        if( err ) return res.status(400).send(err.message);
+        book.comments.push(comment);
+        book.save( (err) => {
+          if( err ) return res.status(400).send(err.message);
+          res.send(book);
+        })
+      })
     })
     
     .delete(function(req, res){
       var bookid = req.params.id;
-      //if successful response will be 'delete successful'
+      if( !bookid ) return res.status(400).send('no book exists');
+      Book.remove({_id: bookid}, (err) => {
+        if( err ) return res.status(400).send(err.message);
+        res.send('delete successful');
+      })
     });
   
 };
