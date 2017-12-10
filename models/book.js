@@ -9,6 +9,11 @@ var bookSchema = new Schema({
 });
 
 
+bookSchema.post('save', function(doc) {
+  console.log('%s has been saved', doc._id);
+});
+
+
 var Book = mongoose.model('Book', bookSchema);
 
 module.exports = Book;

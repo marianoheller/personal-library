@@ -21,8 +21,8 @@ module.exports = function (app) {
 
   app.route('/api/books')
     .get(function (req, res){
-      Book.find({}, (err, res) => {
-        res.send( res.map( (book) => {
+      Book.find({}, (err, books) => {
+        res.send( books.map( (book) => {
           return {
             _id: book._id,
             title: book.title,
@@ -38,7 +38,10 @@ module.exports = function (app) {
       const book = new Book({ title: title });
       book.save( (err) => {
         if(err) return res.status(400).send(err.message);
-        res.json(book);
+        res.send({
+          title: book.title,
+          _id: book._id
+        });
       })
     })
     
@@ -55,8 +58,8 @@ module.exports = function (app) {
     .get(function (req, res){
       var bookid = req.params.id;
       if( !bookid ) return res.status(400).send('no book exists');
-      Book.find({_id: bookid}, (err, book) => {
-        if( err ) return res.status(400).send(err.message);
+      Book.findOne({_id: bookid}, (err, book) => {
+        if( err ) return res.status(400).send('no book exists');
         res.send(book);
       })
     })
@@ -65,7 +68,7 @@ module.exports = function (app) {
       var bookid = req.params.id;
       var comment = req.body.comment;
       if( !bookid ) return res.status(400).send('no book exists');
-      Book.find({_id: bookid}, (err, book) => {
+      Book.findOne({_id: bookid}, (err, book) => {
         if( err ) return res.status(400).send(err.message);
         book.comments.push(comment);
         book.save( (err) => {

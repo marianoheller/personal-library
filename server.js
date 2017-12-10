@@ -1,14 +1,26 @@
 'use strict';
-
+require('dotenv').config()
 var express     = require('express');
 var bodyParser  = require('body-parser');
 var cors        = require('cors');
+var mongoose = require('mongoose');
+
 
 var apiRoutes         = require('./routes/api.js');
 var fccTestingRoutes  = require('./routes/fcctesting.js');
 var runner            = require('./test-runner');
 
 var app = express();
+
+try {
+  mongoose.connect(process.env.DB_URL, {
+    useMongoClient: true
+  });  
+} catch( e ) {
+  console.log(e.message);
+  return;
+}
+
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
