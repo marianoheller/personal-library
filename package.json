@@ -1,0 +1,28 @@
+{
+	"name": "personal-library",
+	"version": "0.0.1",
+	"description": "FreeCodeCamp personal library",
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"engines": {
+		"node": "7.9.0"
+	},
+	"keywords": [
+		"node",
+		"express"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"body-parser": "^1.18.2",
+		"chai": "^4.1.2",
+		"chai-http": "^3.0.0",
+		"cors": "^2.8.4",
+		"express": "^4.16.2",
+		"helmet": "^3.9.0",
+		"mocha": "^4.0.1",
+		"mongodb": "^3.0.0-rc0",
+		"zombie": "^5.0.7"
+	}
+}
